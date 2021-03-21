@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  ros:
+    build: ./ros/
+
+  gazebo:
+    build: ./simulator/
+  
+  # TODO: add services that correspond to a node. Each node should be run in a separate container.
