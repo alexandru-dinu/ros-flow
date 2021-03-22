@@ -15,17 +15,35 @@ RUN apt-get update && \
         ssh \
         libssl-dev \
         pkg-config \
-        vim && \
+        vim \
+        wget && \
     apt-get clean
 
 # ros
 RUN apt-get install -y python3-rosmsg
 
 # rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | /bin/bash -s -- --no-modify-path -y
 
-CMD /bin/bash
+ENV PATH=$PATH:/root/.cargo/bin
+
+# Create empty project for building dependencies
+RUN cargo new --bin project
+
+WORKDIR ./project
+
+# Copy manifest files
+COPY ./Cargo.* ./
+
+# Build dependencies and remove dummy main
+RUN cargo build && rm -rf ./src/*
+
+# Copy source code
+COPY ./src/* ./src/
 
 # Build application
-# TODO
+RUN cargo build
+
+# Entry point
+CMD cargo run
 
