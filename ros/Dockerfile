@@ -1,4 +1,4 @@
-FROM ros:foxy
+FROM ros:kinetic
 
 ENV TERM=xterm-256color
 
@@ -19,9 +19,6 @@ RUN apt-get update && \
         wget && \
     apt-get clean
 
-# ros
-RUN apt-get install -y python3-rosmsg
-
 # rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | /bin/bash -s -- --no-modify-path -y
 
@@ -36,13 +33,15 @@ WORKDIR ./project
 COPY ./Cargo.* ./
 
 # Build dependencies and remove dummy main
-RUN cargo build && rm -rf ./src/*
+RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
+    cargo build && rm -rf ./src/*
 
 # Copy source code
 COPY ./src/* ./src/
 
 # Build application
-RUN cargo build
+RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
+    cargo build
 
 # Entry point
 CMD cargo run
