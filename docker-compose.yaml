@@ -1,10 +1,35 @@
 version: '3'
 
 services:
-  ros:
-    build: ./ros/
+  rosmaster:
+      build: ./ros/
+      command: roscore
 
-  gazebo:
-    build: ./simulator/
-  
+  publisher:
+    build: ./ros/
+    depends_on:
+      - rosmaster
+    environment:
+      - "ROS_HOSTNAME=publisher"
+      - "ROS_MASTER_URI=http://rosmaster:11311"
+    command: ./target/debug/publisher
+
+  subscriber:
+    build: ./ros/
+    depends_on:
+      - rosmaster
+    environment:
+      - "ROS_HOSTNAME=subscriber"
+      - "ROS_MASTER_URI=http://rosmaster:11311"
+    command: ./target/debug/listener
+    
+  printer:
+    build: ./ros/
+    depends_on:
+      - rosmaster
+    environment:
+      - "ROS_HOSTNAME=printer"
+      - "ROS_MASTER_URI=http://rosmaster:11311"
+    command: rostopic echo /chatter
+    
   # TODO: add services that correspond to a node. Each node should be run in a separate container.

@@ -37,12 +37,13 @@ RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
     cargo build && rm -rf ./src/*
 
 # Copy source code
-COPY ./src/* ./src/
+COPY ./src/bin/* ./src/bin/
+COPY ./src/*.rs ./src/
 
 # Build application
 RUN . /opt/ros/$ROS_DISTRO/setup.sh && \
     cargo build
 
 # Entry point
-CMD cargo run
+CMD /bin/bash
 
